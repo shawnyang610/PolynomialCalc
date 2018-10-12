@@ -1,0 +1,60 @@
+Pair 1
+original:  8X^2
+canonical:  8X^2
+original:  -2X
+canonical:  -2X
+======= Addition =======
+canonical:  8X^2-2X
+======= Subtraction =======
+canonical:  8X^2+2X
+======= Multiplication =======
+canonical:  -16X^3
+
+Pair 2
+original:  2-3X^2
+canonical:  -3X^2+2
+original:  -4+4X
+canonical:  4X-4
+======= Addition =======
+canonical:  -3X^2+4X-2
+======= Subtraction =======
+canonical:  -3X^2-4X+6
+======= Multiplication =======
+canonical:  -12X^3+12X^2+8X-8
+
+Pair 3
+original:  1+3X-5X^2
+canonical:  -5X^2+3X+1
+original:  -5-3X+6X^2
+canonical:  6X^2-3X-5
+======= Addition =======
+canonical:  1X^2-4
+======= Subtraction =======
+canonical:  -11X^2+6X+6
+======= Multiplication =======
+canonical:  -30X^4+33X^3+22X^2-18X-5
+
+Pair 4
+original:  5+2X+3X^2-2+4X^2
+canonical:  7X^2+2X+3
+original:  2+3X+3X^2+4X+4X^2
+canonical:  7X^2+7X+2
+======= Addition =======
+canonical:  14X^2+9X+5
+======= Subtraction =======
+canonical:  -5X+1
+======= Multiplication =======
+canonical:  49X^4+63X^3+49X^2+25X+6
+
+Pair 5
+original:  -1+5X+4X^2+3-4X^2
+canonical:  5X+2
+original:  4-4X-4X^2-4+2X
+canonical:  -4X^2-2X
+======= Addition =======
+canonical:  -4X^2+3X+2
+======= Subtraction =======
+canonical:  4X^2+7X+2
+======= Multiplication =======
+canonical:  -20X^3-18X^2-4X
+
