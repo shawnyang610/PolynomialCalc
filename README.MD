@@ -8,6 +8,6 @@
  - cd build
  - cmake ../
  - make
- - ./safe_matrix
+ - ./PolynomialCalc
 
  ** Author: Shawn Yang
