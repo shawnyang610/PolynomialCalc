@@ -3,4 +3,4 @@ project(polynomial_calc)
 
 set(CMAKE_CXX_STANDARD 11)
 
-add_executable(polynomial_calc main.cpp polynomial.cpp polynomial.h)
+add_executable(polynomial_calc main.cpp polynomial.cpp polynomial.h vector.h)

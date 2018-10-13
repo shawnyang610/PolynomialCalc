@@ -5,9 +5,7 @@
 // 10/11/2018
 
 #include "polynomial.h"
-#include <iostream>
-#include <fstream>
-#include <sstream>
+
 
 
 void read_text_example(){
@@ -82,6 +80,8 @@ int main() {
     }
     infile.close();
     outfile.close();
+
+
 
     return 0;
 }

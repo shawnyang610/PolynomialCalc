@@ -8,10 +8,7 @@
 
 
 
-Term::Term (int coe, int exp) {
-    this->coe = coe;
-    this->exp = exp;
-}
+
 
 Polynomial::Polynomial(){};
 
@@ -32,36 +29,55 @@ Polynomial::Polynomial(std::string list) {
 //    set_canonic();
 //}
 
-Polynomial Polynomial::operator*(const Polynomial & polynomial) {
+Polynomial Polynomial::operator*(Polynomial & polynomial) {
     Polynomial temp;
-    for (Term t1 : canonic_plynm){
-        for (Term t2 : polynomial.canonic_plynm){
-            temp.origin_plynm.push_back(Term(t1.coe*t2.coe, t1.exp + t2.exp));
+//    for (Term t1 : canonic_plynm){
+//        for (Term t2 : polynomial.canonic_plynm){
+//            temp.origin_plynm.push_back(Term(t1.coe*t2.coe, t1.exp + t2.exp));
+//        }
+//    }
+
+    for (int i=0; i<canonic_plynm.size(); i++){
+        for (int j=0; j<polynomial.canonic_plynm.size(); j++){
+            temp.origin_plynm.push_back(Term(canonic_plynm.at(i).coe*polynomial.canonic_plynm.at(j).coe, canonic_plynm.at(i).exp + polynomial.canonic_plynm.at(j).exp));
         }
     }
     temp.set_canonic();
     return temp;
 }
 
-Polynomial Polynomial::operator+(const Polynomial & polynomial) {
+Polynomial Polynomial::operator+(Polynomial & polynomial) {
     Polynomial temp;
-    for (Term term : origin_plynm){
-        temp.origin_plynm.push_back(Term(term));
+//    for (Term term : origin_plynm){
+//        temp.origin_plynm.push_back(Term(term));
+//    }
+//    for (Term term : polynomial.origin_plynm){
+//        temp.origin_plynm.push_back(Term(term));
+//    }
+    for (int i=0; i < origin_plynm.size(); i++){
+        temp.origin_plynm.push_back(origin_plynm.at(i));
     }
-    for (Term term : polynomial.origin_plynm){
-        temp.origin_plynm.push_back(Term(term));
+    for (int i=0; i< polynomial.origin_plynm.size();i++){
+        temp.origin_plynm.push_back(polynomial.origin_plynm.at(i));
     }
     temp.set_canonic();
     return temp;
 }
 
-Polynomial Polynomial::operator-(const Polynomial & polynomial) {
+Polynomial Polynomial::operator-(Polynomial & polynomial) {
     Polynomial temp;
-    for (Term term : origin_plynm){
-        temp.origin_plynm.push_back(Term(term));
+//    for (Term term : origin_plynm){
+//        temp.origin_plynm.push_back(Term(term));
+//    }
+//    for (Term term : polynomial.origin_plynm){
+//        temp.origin_plynm.push_back(Term(0-term.coe, term.exp));
+//    }
+
+    for (int i=0; i < origin_plynm.size(); i++){
+        temp.origin_plynm.push_back(origin_plynm.at(i));
     }
-    for (Term term : polynomial.origin_plynm){
-        temp.origin_plynm.push_back(Term(0-term.coe, term.exp));
+    for (int i=0; i< polynomial.origin_plynm.size();i++){
+        temp.origin_plynm.push_back(Term(0 - polynomial.origin_plynm.at(i).coe, polynomial.origin_plynm.at(i).exp));
     }
     temp.set_canonic();
     return temp;
@@ -69,17 +85,31 @@ Polynomial Polynomial::operator-(const Polynomial & polynomial) {
 
 void Polynomial::set_canonic() {
     // add up same exp terms
-    for (auto term : origin_plynm) {
+//    for (auto term : origin_plynm) {
+//        bool is_saved = false;
+//        for (int i = 0; i < canonic_plynm.size(); i++) {
+//            if (canonic_plynm.at(i).exp == term.exp) {
+//                canonic_plynm.at(i).coe = canonic_plynm.at(i).coe + term.coe;
+//                is_saved = true;
+//                break;
+//            }
+//        }
+//        if (is_saved==false) {
+//            canonic_plynm.push_back(Term(term));
+//        }
+//    }
+
+    for (int h=0; h< origin_plynm.size();h++) {
         bool is_saved = false;
         for (int i = 0; i < canonic_plynm.size(); i++) {
-            if (canonic_plynm.at(i).exp == term.exp) {
-                canonic_plynm.at(i).coe = canonic_plynm.at(i).coe + term.coe;
+            if (canonic_plynm.at(i).exp == origin_plynm.at(h).exp) {
+                canonic_plynm.at(i).coe = canonic_plynm.at(i).coe + origin_plynm.at(h).coe;
                 is_saved = true;
                 break;
             }
         }
         if (is_saved==false) {
-            canonic_plynm.push_back(Term(term));
+            canonic_plynm.push_back(Term(origin_plynm.at(h)));
         }
     }
     // order terms from big exp to small exp and get ride of terms with coe=0
@@ -88,7 +118,8 @@ void Polynomial::set_canonic() {
         is_changed=false;
         for (int i = 1; i < canonic_plynm.size(); i++) {
         if (canonic_plynm.at(i-1).coe == 0){
-            canonic_plynm.erase(canonic_plynm.begin()+i-1);
+//            canonic_plynm.erase(canonic_plynm.begin()+i-1);
+            canonic_plynm.erase(i-1);
         }
             // bubble sort all terms from left to right
             if (canonic_plynm.at(i - 1).exp < canonic_plynm.at(i).exp) {
@@ -128,7 +159,7 @@ void Polynomial::output_canonical(std::ofstream &outfile) {
 
 
 
-void Polynomial::print(const std::vector<Term> & plynm) {
+void Polynomial::print(Vector<Term> & plynm) {
     for (int i=0; i<plynm.size(); i++){
         if (i==0 || plynm.at(i).coe<0){
             std::cout<<plynm.at(i).coe;
@@ -147,7 +178,7 @@ void Polynomial::print(const std::vector<Term> & plynm) {
     std::cout<<std::endl;
 }
 
-void Polynomial::output(const std::vector<Term> &plynm, std::ofstream &outfile) {
+void Polynomial::output(Vector<Term> &plynm, std::ofstream &outfile) {
     for (int i=0; i<plynm.size(); i++){
         if (i==0 || plynm.at(i).coe<0){
             outfile<<plynm.at(i).coe;

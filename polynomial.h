@@ -8,21 +8,29 @@
 #define POLYNOMIAL_CALC_POLYNOMIAL_H
 
 #include <iostream>
-#include <vector>
 #include <sstream>
 #include <fstream>
+#include "vector.h"
 
-// Store each pair of numbers read from a line aka Term in Polynomial
 struct Term {
     int coe;
     int exp;
-    Term (int, int);
+    Term(){
+        coe=0;
+        exp=0;
+    };
+    Term (int coe, int exp) {
+        this->coe = coe;
+        this->exp = exp;
+    }
 };
+
+
 
 // Stores all terms from a line in both original form and canonical form.
 class Polynomial {
-    std::vector<Term> origin_plynm;
-    std::vector<Term> canonic_plynm;
+    Vector<Term> origin_plynm;
+    Vector<Term> canonic_plynm;
 
 public:
     // Constructor
@@ -30,9 +38,9 @@ public:
     Polynomial(std::string list);
 
 //    void operator= (const Polynomial &);
-    Polynomial operator+ (const Polynomial &);
-    Polynomial operator- (const Polynomial &);
-    Polynomial operator* (const Polynomial &);
+    Polynomial operator+ (Polynomial &);
+    Polynomial operator- (Polynomial &);
+    Polynomial operator* (Polynomial &);
 
     void print_original();
     void print_canonical();
@@ -40,8 +48,8 @@ public:
     void output_original(std::ofstream &);
     void output_canonical(std::ofstream &);
 
-    void print(const std::vector<Term> &);
-    void output(const std::vector<Term> &, std::ofstream &);
+    void print(Vector<Term> &);
+    void output(Vector<Term> &, std::ofstream &);
 
 
     // reduce its terms to canonical form
