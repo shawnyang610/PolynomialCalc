@@ -32,7 +32,7 @@ int main() {
     std::ofstream outfile ("output.txt");
     std::string line;
     while (std::getline(infile, line)){
-        std::cout<<"Pair "<<count++<<std::endl;
+        std::cout<<"Pair "<<++count<<std::endl;
         outfile<<"Pair "<<count<<std::endl;
 
         // Create a pair of Polinomials

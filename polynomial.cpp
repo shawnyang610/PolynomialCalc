@@ -8,160 +8,205 @@
 
 
 
-Term::Term (int coe, int exp) {
-    this->coe = coe;
-    this->exp = exp;
-}
+
 
 Polynomial::Polynomial(){};
 
 
-Polynomial::Polynomial(std::string list) {
+Polynomial::Polynomial(std::string list) : original_count(0) {
+    std::map<int,int>::iterator term;
     std::istringstream iss(list);
     int coe, exp;
     while(iss >> coe >> exp){
-        origin_plynm.push_back(Term(coe, exp));
+        // load canonic map
+        term = canonic.find(exp);
+        if (term == canonic.end()){
+            canonic[exp]=coe;
+        }
+        else{
+            int temp = term->second + coe;
+            if (temp==0) {
+                canonic.erase(term);
+            }
+            else{
+                term->second = temp;
+            }
+        }
+
+        // load original
+        original[original_count++] = coe;
+        original[original_count++] = exp;
     }
 
-    set_canonic();
 }
 
-//void Polynomial::operator=(const Polynomial & polynomial) {
-//    origin_plynm = polynomial.origin_plynm;
-//    canonic_plynm = polynomial.canonic_plynm;
-//    set_canonic();
-//}
+void Polynomial::operator=(const Polynomial & polynomial) {
+    for (int i=0; i<100;i++){
+        original[i] = polynomial.original[i];
+    }
+    canonic = polynomial.canonic;
+}
 
 Polynomial Polynomial::operator*(const Polynomial & polynomial) {
-    Polynomial temp;
-    for (Term t1 : canonic_plynm){
-        for (Term t2 : polynomial.canonic_plynm){
-            temp.origin_plynm.push_back(Term(t1.coe*t2.coe, t1.exp + t2.exp));
+    Polynomial ret;
+
+    for (auto term1:canonic){
+        for (auto term2:polynomial.canonic){
+            int coe = term1.second * term2.second;
+            int exp = term1.first + term2.first;
+            auto temp = ret.canonic.find(exp);
+            if (temp == ret.canonic.end()){
+                ret.canonic[exp] = coe;
+            }
+            else {
+                coe = coe + temp->second;
+                if (coe==0){
+                    ret.canonic.erase(exp);
+                }
+                else{
+                    temp->second = coe;
+                }
+            }
         }
     }
-    temp.set_canonic();
-    return temp;
+
+    return ret;
 }
 
 Polynomial Polynomial::operator+(const Polynomial & polynomial) {
-    Polynomial temp;
-    for (Term term : origin_plynm){
-        temp.origin_plynm.push_back(Term(term));
+    Polynomial ret;
+    ret.canonic = this->canonic;
+    for (auto term2:polynomial.canonic){
+        auto term1 = ret.canonic.find(term2.first);
+        if (term1 == ret.canonic.end()){
+            ret.canonic[term2.first] = term2.second;
+        }
+        else{
+            int t = term1->second + term2.second;
+            if (t==0){
+                ret.canonic.erase(term2.first);
+            }
+            else{
+                term1->second = t;
+            }
+        }
     }
-    for (Term term : polynomial.origin_plynm){
-        temp.origin_plynm.push_back(Term(term));
-    }
-    temp.set_canonic();
-    return temp;
+    return ret;
 }
 
 Polynomial Polynomial::operator-(const Polynomial & polynomial) {
-    Polynomial temp;
-    for (Term term : origin_plynm){
-        temp.origin_plynm.push_back(Term(term));
-    }
-    for (Term term : polynomial.origin_plynm){
-        temp.origin_plynm.push_back(Term(0-term.coe, term.exp));
-    }
-    temp.set_canonic();
-    return temp;
-}
-
-void Polynomial::set_canonic() {
-    // add up same exp terms
-    for (auto term : origin_plynm) {
-        bool is_saved = false;
-        for (int i = 0; i < canonic_plynm.size(); i++) {
-            if (canonic_plynm.at(i).exp == term.exp) {
-                canonic_plynm.at(i).coe = canonic_plynm.at(i).coe + term.coe;
-                is_saved = true;
-                break;
+    Polynomial ret;
+    ret.canonic = this->canonic;
+    for (auto term2:polynomial.canonic){
+        auto term1 = ret.canonic.find(term2.first);
+        if (term1 == ret.canonic.end()){
+            ret.canonic[term2.first] = -term2.second;
+        }
+        else{
+            int t = term1->second - term2.second;
+            if (t==0){
+                ret.canonic.erase(term2.first);
             }
-        }
-        if (is_saved==false) {
-            canonic_plynm.push_back(Term(term));
-        }
-    }
-    // order terms from big exp to small exp and get ride of terms with coe=0
-    bool is_changed=true;
-    while (is_changed==true) {
-        is_changed=false;
-        for (int i = 1; i < canonic_plynm.size(); i++) {
-        if (canonic_plynm.at(i-1).coe == 0){
-            canonic_plynm.erase(canonic_plynm.begin()+i-1);
-        }
-            // bubble sort all terms from left to right
-            if (canonic_plynm.at(i - 1).exp < canonic_plynm.at(i).exp) {
-                int temp_coe = canonic_plynm.at(i - 1).coe;
-                int temp_exp = canonic_plynm.at(i - 1).exp;
-
-                canonic_plynm.at(i - 1).coe = canonic_plynm.at(i).coe;
-                canonic_plynm.at(i - 1).exp = canonic_plynm.at(i).exp;
-
-                canonic_plynm.at(i).coe = temp_coe;
-                canonic_plynm.at(i).exp = temp_exp;
-                is_changed = true;
+            else{
+                term1->second = t;
             }
         }
     }
+    return ret;
 }
+
+
 
 void Polynomial::print_original(){
     std::cout<<"original:  ";
-    print(origin_plynm);
-}
-
-void Polynomial::print_canonical() {
-    std::cout<<"canonical: ";
-    print(canonic_plynm);
-}
-
-void Polynomial::output_original(std::ofstream &outfile) {
-    outfile<<"original:  ";
-    output(origin_plynm, outfile);
-}
-
-void Polynomial::output_canonical(std::ofstream &outfile) {
-    outfile<<"canonical:  ";
-    output(canonic_plynm, outfile);
-}
-
-
-
-void Polynomial::print(const std::vector<Term> & plynm) {
-    for (int i=0; i<plynm.size(); i++){
-        if (i==0 || plynm.at(i).coe<0){
-            std::cout<<plynm.at(i).coe;
+    int i=0;
+    while (i <=original_count-2){
+        if (i==0 || original[i]<0){
+            std::cout<<original[i];
         }
         else {
-            std::cout<<"+"<<plynm.at(i).coe;
+            std::cout<<"+"<<original[i];
         }
+        i++;
 
-        if (plynm.at(i).exp>0){
+        if (original[i]>0){
             std::cout<<"X";
-            if (plynm.at(i).exp>1){
-                std::cout<<"^"<<plynm.at(i).exp;
+            if (original[i]>1){
+                std::cout<<"^"<<original[i];
             }
         }
+        i++;
     }
     std::cout<<std::endl;
 }
 
-void Polynomial::output(const std::vector<Term> &plynm, std::ofstream &outfile) {
-    for (int i=0; i<plynm.size(); i++){
-        if (i==0 || plynm.at(i).coe<0){
-            outfile<<plynm.at(i).coe;
+void Polynomial::print_canonical() {
+    std::cout<<"canonical: ";
+    int count=0;
+    for (auto term : canonic){
+        if (count==0 || term.second<0){
+            std::cout<<term.second;
         }
         else {
-            outfile<<"+"<<plynm.at(i).coe;
+            std::cout<<"+"<<term.second;
         }
+        count++;
 
-        if (plynm.at(i).exp>0){
-            outfile<<"X";
-            if (plynm.at(i).exp>1){
-                outfile<<"^"<<plynm.at(i).exp;
+        if (term.first>0){
+            std::cout<<"X";
+            if (term.first>1){
+                std::cout<<"^"<<term.first;
             }
         }
+        count++;
+    }
+    std::cout<<std::endl;
+}
+
+void Polynomial::output_original(std::ofstream &outfile) {
+    outfile<<"original:  ";
+    int i=0;
+    while (i <=original_count-2){
+        if (i==0 || original[i]<0){
+            outfile<<original[i];
+        }
+        else {
+            outfile<<"+"<<original[i];
+        }
+        i++;
+
+        if (original[i]>0){
+            outfile<<"X";
+            if (original[i]>1){
+                outfile<<"^"<<original[i];
+            }
+        }
+        i++;
     }
     outfile<<std::endl;
 }
+
+void Polynomial::output_canonical(std::ofstream &outfile) {
+    outfile<<"canonical:  ";
+    int count=0;
+    for (auto term : canonic){
+        if (count==0 || term.second<0){
+            outfile<<term.second;
+        }
+        else {
+            outfile<<"+"<<term.second;
+        }
+        count++;
+
+        if (term.first>0){
+            outfile<<"X";
+            if (term.first>1){
+                outfile<<"^"<<term.first;
+            }
+        }
+        count++;
+    }
+    outfile<<std::endl;
+}
+
+

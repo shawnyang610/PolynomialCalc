@@ -11,25 +11,20 @@
 #include <vector>
 #include <sstream>
 #include <fstream>
+#include <map>
 
-// Store each pair of numbers read from a line aka Term in Polynomial
-struct Term {
-    int coe;
-    int exp;
-    Term (int, int);
-};
 
 // Stores all terms from a line in both original form and canonical form.
 class Polynomial {
-    std::vector<Term> origin_plynm;
-    std::vector<Term> canonic_plynm;
-
+    std::map<int,int> canonic;
+    int original[100];
+    int original_count;
 public:
     // Constructor
     Polynomial();
     Polynomial(std::string list);
 
-//    void operator= (const Polynomial &);
+    void operator= (const Polynomial &);
     Polynomial operator+ (const Polynomial &);
     Polynomial operator- (const Polynomial &);
     Polynomial operator* (const Polynomial &);
@@ -40,12 +35,6 @@ public:
     void output_original(std::ofstream &);
     void output_canonical(std::ofstream &);
 
-    void print(const std::vector<Term> &);
-    void output(const std::vector<Term> &, std::ofstream &);
-
-
-    // reduce its terms to canonical form
-    void set_canonic();
 };
 
 
